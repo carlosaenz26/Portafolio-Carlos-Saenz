@@ -11,13 +11,18 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+#BASE_DIR = Path(__file__).resolve().parent.parent
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
+
+APP_NAME = 'Carlos Saenz'   # Add
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-z9lrp*)$e7hyx-v&48uu%@1&ab8%2vq3ohoptt!a6@6=)uj(5*'
@@ -31,14 +36,35 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'polls.apps.PollsConfig',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
+
+    # Extensions - installed with pip3 / requirements.txt
+    'django_extensions',
+    'crispy_forms',
+    'rest_framework',
+    'social_django',
+    'taggit',
+
+
+    'polls.apps.PollsConfig',
+    'home.apps.HomeConfig',
+    'hello.apps.HelloConfig',
+    'autos.apps.AutosConfig',
+    'authz.apps.AuthzConfig',
+    'cats.apps.CatsConfig',
+    'ads.apps.AdsConfig',
+
+
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'  # Add
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -63,6 +89,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'home.context_processors.settings',      # Add
+                'social_django.context_processors.backends',  # Add
+                'social_django.context_processors.login_redirect', # Add
             ],
         },
     },
@@ -75,9 +104,19 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'cssaenz10$ads',
+        'USER': 'cssaenz10',
+        'PASSWORD': 'Labradajuancho123,',
+        'HOST': 'cssaenz10.mysql.pythonanywhere-services.com',
+         'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
     }
 }
 
@@ -119,6 +158,37 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 # Default primary key field type
+# Add the settings below
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    )
+}
+
+
+# Configure the social login
+try:
+    from . import github_settings
+    SOCIAL_AUTH_GITHUB_KEY = github_settings.SOCIAL_AUTH_GITHUB_KEY
+    SOCIAL_AUTH_GITHUB_SECRET = github_settings.SOCIAL_AUTH_GITHUB_SECRET
+except:
+    print('When you want to use social login, please see dj4e-samples/github_settings-dist.py')
+
+# https://python-social-auth.readthedocs.io/en/latest/configuration/django.html#authentication-backends
+# https://simpleisbetterthancomplex.com/tutorial/2016/10/24/how-to-add-social-login-to-django.html
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.github.GithubOAuth2',
+    # 'social_core.backends.twitter.TwitterOAuth',
+    # 'social_core.backends.facebook.FacebookOAuth2',
+
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/'
+
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

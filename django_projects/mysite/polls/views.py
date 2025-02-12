@@ -77,7 +77,7 @@ class ResultsView(generic.DetailView):
 
 
 def owner(request):
-    return HttpResponse("Hello, world. faf5f848 is the polls owner.")
+    return HttpResponse("Hello, world. faf5f848 is the polls owner. 9bdd4375")
 
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
