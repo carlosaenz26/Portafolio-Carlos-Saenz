@@ -71,9 +71,17 @@
 <p>
 <a href="{% url 'ads:ad_create' %}">Add an ad</a> |
 {% if user.is_authenticated %}
-<a href="{% url 'logout' %}?next={% url 'ads:all' %}">Logout</a>
+<li>
+    <form action="{% url 'authz:logout' %}" method="post" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" style="border:none; background:none; color:blue; cursor:pointer;">Logout</button>
+    </form>
+</li>
+
 {% else %}
-<a href="{% url 'login' %}?next={% url 'ads:all' %}">Login</a>
+
+<a href="{% url 'authz:login' %}?next={% url 'ads:all' %}">Login</a>
+
 {% endif %}
 </p>
 <script>

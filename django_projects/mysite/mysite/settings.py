@@ -16,8 +16,12 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 #BASE_DIR = Path(__file__).resolve().parent.parent
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+#BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+#BASE_DIR = Path(__file__).resolve().parent.parent
+import os
 
+#BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent  # Ensure BASE_DIR is a Path object
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -51,6 +55,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'social_django',
     'taggit',
+    'bootstrap3',  # ADD THIS LINE
 
 
     'polls.apps.PollsConfig',
@@ -81,7 +86,11 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        #'DIRS': [],
+        #'DIRS': [BASE_DIR / "mysite/templates"],  # Make sure templates are loaded
+        'DIRS': [os.path.join(BASE_DIR, "mysite", "templates")],  # Add this line
+        
+
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -103,23 +112,28 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+# DATABASES = {
+#     # 'default': {
+#     #     'ENGINE': 'django.db.backends.sqlite3',
+#     #     'NAME': BASE_DIR / 'db.sqlite3',
+#     # }
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'cssaenz10$ads',
+#         'USER': 'cssaenz10',
+#         'PASSWORD': 'Labradajuancho123,',
+#         'HOST': 'cssaenz10.mysql.pythonanywhere-services.com',
+#          'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+#         },
+#     }
+# }
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cssaenz10$ads',
-        'USER': 'cssaenz10',
-        'PASSWORD': 'Labradajuancho123,',
-        'HOST': 'cssaenz10.mysql.pythonanywhere-services.com',
-         'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / "db.sqlite3",  # No need for str()
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -156,6 +170,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+#STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Default primary key field type
 # Add the settings below
@@ -188,6 +203,7 @@ AUTHENTICATION_BACKENDS = (
 
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
+
 
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 

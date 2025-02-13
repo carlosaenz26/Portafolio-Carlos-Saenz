@@ -1,13 +1,65 @@
-<h1>Current request.path {{ request.path }}</h1>
-{% if user.is_authenticated %}
-<p>
-<pre>
-welcome!
-</pre>
-</p>
-<p>You can <a href="{% url 'logout' %}?next={{ request.path }}">Logout</a></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authz Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 0;
+            text-decoration: none;
+            color: white;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .btn-login {
+            background-color: #4CAF50;
+        }
+        .btn-logout {
+            background-color: #f44336;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
 
-{% else %}
-<p>You are not logged in</p>
-<p>You can <a href="{% url 'login' %}?next={{ request.path }}">Login</a> if you like.</p>
-{% endif %}
+    <div class="container">
+        <h1>Current request.path: {{ request.path }}</h1>
+
+        {% if user.is_authenticated %}
+            <p><strong>Welcome, {{ user.username }}!</strong></p>
+
+            <form action="{% url 'authz:logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-logout">Logout</button>
+            </form>
+
+        {% else %}
+            <p>You are not logged in.</p>
+            <p>
+                <a href="{% url 'authz:login' %}?next={{ request.path }}" class="btn btn-login">Login</a>
+            </p>
+        {% endif %}
+    </div>
+
+</body>
+</html>

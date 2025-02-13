@@ -1,0 +1,12 @@
+django
+django-extensions
+django-crispy-forms
+djangorestframework
+social-auth-app-django
+django-taggit
+social-auth-core
+Markdown
+django-filter
+mysqlclient
+django-bootstrap3
+psycopg2-binary

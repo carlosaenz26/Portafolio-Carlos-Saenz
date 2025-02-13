@@ -31,6 +31,7 @@ SITE_ROOT = os.path.join(BASE_DIR, 'site')
 urlpatterns = [
     path('', include('ads.urls')),
     path('admin/', admin.site.urls),
+    path('authz/', include('authz.urls')),
     path('accounts/', include('django.contrib.auth.urls')),#acounts
     re_path(r'^oauth/', include('social_django.urls', namespace='social')),  # Keep
 
