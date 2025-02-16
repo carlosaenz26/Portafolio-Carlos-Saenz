@@ -38,6 +38,7 @@ urlpatterns = [
     re_path(r'^site/(?P<path>.*)$', serve,{'document_root': SITE_ROOT, 'show_indexes': True},
      name='site_path'),
     path('ads/', include('ads.urls')),
+    path('api_xm/', include('api_xm.urls', namespace='api_xm'))
 
     # path('polls/', include('polls.urls')),
 

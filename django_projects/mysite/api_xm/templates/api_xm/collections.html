@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}API XM Dashboard{% endblock %}
+
+{% block content %}
+<h2>Bienvenido al API XM Dashboard</h2>
+<p>Aquí se mostrarán las colecciones disponibles.</p>
+
+{% if collections %}
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Metric ID</th>
+                <th>Metric Name</th>
+                <th>Entity</th>
+                <th>URL</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for collection in collections.itertuples %}
+            <tr>
+                <td>{{ collection.MetricId }}</td>
+                <td>{{ collection.MetricName }}</td>
+                <td>{{ collection.Entity }}</td>
+                <td><a href="{{ collection.Url }}" target="_blank">{{ collection.Url }}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No se encontraron colecciones disponibles.</p>
+{% endif %}
+{% endblock %}

@@ -10,3 +10,4 @@ django-filter
 mysqlclient
 django-bootstrap3
 psycopg2-binary
+pydataxm

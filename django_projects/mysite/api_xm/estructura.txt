@@ -1,0 +1,7 @@
+├── api_xm/
+    ├── __init__.py
+    ├── config.py          # Configuración de la API
+    ├── data_fetcher.py    # Conexión a la API
+    ├── data_visualizer.py # Visualización de datos
+    ├── requirements.txt
+    └── main.py            # Punto de entrada
