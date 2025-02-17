@@ -21,7 +21,7 @@ from django.conf import settings
 from django.contrib.auth import views as auth_views
 from django.views.static import serve
 from django.views.generic import TemplateView
-
+from home.views import HomeView
 
 
 # Up two folders to serve "site" content
@@ -29,7 +29,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE_ROOT = os.path.join(BASE_DIR, 'site')
 
 urlpatterns = [
-    path('', include('ads.urls')),
+    #path('', include('ads.urls')),
+    path('', HomeView.as_view(), name='home'),
     path('admin/', admin.site.urls),
     path('authz/', include('authz.urls')),
     path('accounts/', include('django.contrib.auth.urls')),#acounts
@@ -37,7 +38,7 @@ urlpatterns = [
 
     re_path(r'^site/(?P<path>.*)$', serve,{'document_root': SITE_ROOT, 'show_indexes': True},
      name='site_path'),
-    path('ads/', include('ads.urls')),
+    #path('ads/', include('ads.urls')),
     path('api_xm/', include('api_xm.urls', namespace='api_xm'))
 
     # path('polls/', include('polls.urls')),

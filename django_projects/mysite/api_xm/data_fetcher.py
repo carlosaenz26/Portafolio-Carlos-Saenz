@@ -24,12 +24,18 @@ def list_available_collections():
         api_client = pydataxm.ReadDB()
         collections_df = api_client.get_collections()
 
-        if collections_df.empty:
-            logging.warning("No se encontraron colecciones disponibles.")
-            return pd.DataFrame()
-
-        logging.info("Colecciones obtenidas exitosamente de la API de XM.")
-        return collections_df
+        #print(f"🔍 Collections obtenidas: {collections_df}")  # <- Agregamos esta línea para depuración
+        if collections_df is not None:
+            # Convertimos el DataFrame a una lista de diccionarios
+            grouped = collections_df.groupby(['Type', 'Entity']).apply(lambda df: df.to_dict(orient='records')).to_dict()
+            print(f"🔍 Collections agrupadas: {list(grouped.keys())}")
+            
+            #collections_list = collections_df.to_dict(orient='records')
+            #print(f"🔍 Collections obtenidas: {collections_list[:5]}")  # Solo mostramos las 5 primeras
+            return grouped
+        else:
+            logging.warning("La API devolvió 'None', no hay colecciones disponibles.")
+            return {}
 
     except Exception as e:
         logging.error(f"Error al conectar con la API de XM: {e}", exc_info=True)

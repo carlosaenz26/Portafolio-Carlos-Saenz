@@ -57,15 +57,16 @@ INSTALLED_APPS = [
     'taggit',
     'bootstrap3',  # ADD THIS LINE
 
-
+    #'home',
     'polls.apps.PollsConfig',
     'home.apps.HomeConfig',
     'hello.apps.HelloConfig',
     'autos.apps.AutosConfig',
     'authz.apps.AuthzConfig',
     'cats.apps.CatsConfig',
-    'ads.apps.AdsConfig',
+    #'ads.apps.AdsConfig',
     'api_xm',
+
 
 
 ]

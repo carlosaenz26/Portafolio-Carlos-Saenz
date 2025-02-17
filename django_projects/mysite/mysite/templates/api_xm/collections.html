@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>📊 Colecciones Disponibles - API XM</h2>
+
+<div>
+    <!-- Botones para seleccionar Type -->
+    <h4>🔹 Selecciona un Type:</h4>
+    <div id="type-buttons">
+        {% for type_key in collections.keys %}
+            <button class="btn-type" onclick="showEntities('{{ type_key }}')">{{ type_key }}</button>
+        {% endfor %}
+    </div>
+</div>
+
+<div id="entity-buttons" style="display: none; margin-top: 20px;">
+    <h4>🔹 Selecciona un Entity:</h4>
+    <div id="entity-list"></div>
+</div>
+
+<div id="metrics-table" style="display: none; margin-top: 30px;">
+    <h4>📋 Métricas:</h4>
+    <table border="1" cellspacing="0" cellpadding="5">
+        <thead>
+            <tr>
+                <th>MetricName</th>
+                <th>URL</th>
+                <th>Descripción</th>
+            </tr>
+        </thead>
+        <tbody id="metrics-body"></tbody>
+    </table>
+</div>
+
+<script>
+    const collections = {{ collections|safe }};
+    let selectedType = null;
+
+    function showEntities(type) {
+        selectedType = type;
+        const entities = Object.keys(collections[type]);
+        const entityButtons = entities.map(entity => 
+            `<button class="btn-entity" onclick="showMetrics('${type}', '${entity}')">${entity}</button>`).join('');
+
+        document.getElementById('entity-list').innerHTML = entityButtons;
+        document.getElementById('entity-buttons').style.display = 'block';
+        document.getElementById('metrics-table').style.display = 'none';
+    }
+
+    function showMetrics(type, entity) {
+        const metrics = collections[type][entity];
+        const rows = metrics.map(m => `
+            <tr>
+                <td>${m.MetricName}</td>
+                <td><a href="${m.Url}" target="_blank">🔗 Ver</a></td>
+                <td>${m.MetricDescription}</td>
+            </tr>`).join('');
+        
+        document.getElementById('metrics-body').innerHTML = rows;
+        document.getElementById('metrics-table').style.display = 'block';
+    }
+</script>
+
+<style>
+    .btn-type, .btn-entity {
+        margin: 5px;
+        padding: 10px 15px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .btn-type:hover, .btn-entity:hover {
+        background-color: #0056b3;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th, td {
+        border: 1px solid #ccc;
+        padding: 10px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f0f0f0;
+    }
+</style>
+
+{% endblock %}

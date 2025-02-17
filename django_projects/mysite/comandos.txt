@@ -1,1 +1,3 @@
 source venv/Scripts/activate
+git pull origin feature/api_data_visualization
+echo "pydataxm" >> requirements.txt
