@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Selecciona Tipo, Entidad y Métrica</h2>
+
+<!-- Select TYPE -->
+<div>
+  <label>Type:</label>
+  <select id="typeSelect">
+    <option value="">-- Selecciona --</option>
+  </select>
+</div>
+
+<!-- Select ENTITY -->
+<div>
+  <label>Entity:</label>
+  <select id="entitySelect">
+    <option value="">-- Selecciona --</option>
+  </select>
+</div>
+
+<!-- Select METRIC -->
+<div>
+  <label>Métrica (MetricId):</label>
+  <select id="metricSelect">
+    <option value="">-- Selecciona --</option>
+  </select>
+</div>
+
+<!-- Fechas -->
+<div>
+  <label>Fecha inicio:</label>
+  <input type="date" id="startDate">
+
+  <label>Fecha fin:</label>
+  <input type="date" id="endDate">
+</div>
+
+<button onclick="consultar()">Consultar</button>
+
+<div id="result" style="margin-top: 20px;"></div>
+
+<script>
+async function loadCollections() {
+  try {
+    let resp = await fetch("{% url 'api_xm:collections_tree' %}");
+    let jsonData = await resp.json();
+
+    // Llenar el select de Type con las keys del collections
+    let typeKeys = Object.keys(jsonData.collections);
+    let typeSelect = document.getElementById("typeSelect");
+    typeKeys.forEach(typeVal => {
+      let opt = document.createElement("option");
+      opt.value = typeVal;
+      opt.textContent = typeVal;
+      typeSelect.appendChild(opt);
+    });
+
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+document.getElementById("typeSelect").addEventListener("change", function(){
+  let selectedType = this.value;
+  // Limpia entitySelect
+  let entitySelect = document.getElementById("entitySelect");
+  entitySelect.innerHTML = '<option value="">-- Selecciona --</option>';
+
+  let metricSelect = document.getElementById("metricSelect");
+  metricSelect.innerHTML = '<option value="">-- Selecciona --</option>';
+
+  if(!selectedType) return;  // no se ha seleccionado
+  
+  // Carga de nuevo las colecciones (podemos guardarlas en una variable global en loadCollections)
+  fetch("{% url 'api_xm:collections_tree' %}")
+  .then(r => r.json())
+  .then(jsonData => {
+    let groupedData = jsonData.collections; // { HourlyEntities: { Sistema: [...], Agente: [...] }, ...}
+    let entities = Object.keys(groupedData[selectedType]); // Entities en el Type
+    entities.forEach(entityVal => {
+      let opt = document.createElement("option");
+      opt.value = entityVal;
+      opt.textContent = entityVal;
+      entitySelect.appendChild(opt);
+    });
+  });
+});
+
+document.getElementById("entitySelect").addEventListener("change", function(){
+  let selectedEntity = this.value;
+  let selectedType = document.getElementById("typeSelect").value;
+
+  let metricSelect = document.getElementById("metricSelect");
+  metricSelect.innerHTML = '<option value="">-- Selecciona --</option>';
+
+  if(!selectedEntity) return;
+
+  // Volvemos a cargar / usar las colecciones
+  fetch("{% url 'api_xm:collections_tree' %}")
+  .then(r => r.json())
+  .then(jsonData => {
+    let groupedData = jsonData.collections; 
+    let records = groupedData[selectedType][selectedEntity]; // Array de objetos
+    // Ej: [ {MetricId: 'DemaReal', MetricName:..., ...}, {MetricId:...} ]
+    records.forEach(rec => {
+      let opt = document.createElement("option");
+      opt.value = rec.MetricId;
+      opt.textContent = rec.MetricId + " - " + rec.MetricName;
+      metricSelect.appendChild(opt);
+    });
+  });
+});
+
+async function consultar() {
+  let selectedType = document.getElementById("typeSelect").value;
+  let selectedEntity = document.getElementById("entitySelect").value;
+  let selectedMetric = document.getElementById("metricSelect").value;
+  let startDate = document.getElementById("startDate").value;
+  let endDate = document.getElementById("endDate").value;
+
+  if(!selectedType || !selectedEntity || !selectedMetric || !startDate || !endDate) {
+    alert('Faltan campos por seleccionar');
+    return;
+  }
+
+  // Aún no hemos definido endpoint para la consulta final, 
+  // pero podríamos hacer un fetch a algo así:
+  const url = `/api_xm/dashboard/data/?endpoint=${selectedType}&metric_id=${selectedMetric}&entity=${selectedEntity}&start_date=${startDate}&end_date=${endDate}`;
+  try {
+    let resp = await fetch(url);
+    let data = await resp.json();
+    console.log(data);
+    document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+  } catch(e) {
+    console.error(e);
+    document.getElementById("result").textContent = 'Error consultando datos';
+  }
+}
+
+// Cargar la info al iniciar
+loadCollections();
+</script>
+{% endblock %}
+</script>

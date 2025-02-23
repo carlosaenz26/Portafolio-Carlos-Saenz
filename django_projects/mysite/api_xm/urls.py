@@ -1,18 +1,10 @@
 from django.urls import path
-from . import views
-
-app_name = 'api_xm'
+from .views import get_collections_tree, dashboard_view
+from .views import dashboard_view, xm_dashboard_data
+app_name = "api_xm"
 
 urlpatterns = [
-    path('dashboard/', views.api_xm_dashboard, name='api_xm_dashboard'),
-    #path('collections/', views.view_collections, name='collections'),
-    #path('metric/<str:metric_id>/', views.view_metric_data, name='metric_data'),
+    path('dashboard/', dashboard_view, name='api_xm_dashboard'),
+    path("dashboard/data/", xm_dashboard_data, name="xm_dashboard_data"),
+    path('collections-tree/', get_collections_tree, name='collections_tree'),  # <-- Nueva ruta
 ]
-# from django.urls import path
-# from . import views
-
-# app_name = 'api_xm'
-
-# urlpatterns = [
-#     path('dashboard/', views.api_xm_dashboard, name='api_xm_dashboard'),
-# ]

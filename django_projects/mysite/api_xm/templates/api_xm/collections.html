@@ -1,33 +1,91 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}API XM Dashboard{% endblock %}
+{% block title %}
+    API XM Dashboard
+{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+        .description-cell {
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+    </style>
+{% endblock %}
 
 {% block content %}
-<h2>Bienvenido al API XM Dashboard</h2>
-<p>Aquí se mostrarán las colecciones disponibles.</p>
+    <div class="container mt-4">
+        <h2>📊 Colecciones Disponibles - API XM</h2>
+        <p class="lead">Seleccione una métrica para consultar datos detallados.</p>
 
-{% if collections %}
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Metric ID</th>
-                <th>Metric Name</th>
-                <th>Entity</th>
-                <th>URL</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for collection in collections.itertuples %}
-            <tr>
-                <td>{{ collection.MetricId }}</td>
-                <td>{{ collection.MetricName }}</td>
-                <td>{{ collection.Entity }}</td>
-                <td><a href="{{ collection.Url }}" target="_blank">{{ collection.Url }}</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% else %}
-    <p>No se encontraron colecciones disponibles.</p>
-{% endif %}
+        {% if collections %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Metric ID</th>
+                            <th scope="col">Nombre de la Métrica</th>
+                            <th scope="col">Entidad</th>
+                            <th scope="col">Tipo</th>
+                            <th scope="col">Descripción</th>
+                            <th scope="col">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for collection in collections %}
+                            {% with metrics=collection|last %}
+                                {% if metrics %}
+                                    {% for metric in metrics %}
+                                        <tr>
+                                            <td>{{ metric.MetricId|default:"N/A" }}</td>
+                                            <td>{{ metric.MetricName|default:"N/A" }}</td>
+                                            <td>{{ metric.Entity|default:(collection.1|default:"N/A") }}</td>
+                                            <td>{{ metric.Type|default:(collection.0|default:"N/A") }}</td>
+                                            <td class="description-cell">{{ metric.MetricDescription|default:"Sin descripción" }}</td>
+                                            <td>
+                                                <a href="{% url 'api_xm:metric_data_view' metric.MetricId|default:'unknown' %}" 
+                                                   class="btn btn-primary btn-sm">
+                                                    Consultar Datos
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td>{{ collection.0|default:"N/A" }}</td>
+                                        <td colspan="4">No hay métricas disponibles para esta colección</td>
+                                        <td>-</td>
+                                    </tr>
+                                {% endif %}
+                            {% endwith %}
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center">No se encontraron colecciones</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-warning" role="alert">
+                No se encontraron colecciones disponibles.
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("Dashboard cargado");
+        });
+    </script>
 {% endblock %}

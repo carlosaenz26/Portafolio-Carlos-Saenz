@@ -1,46 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" dir="ltr">
 <head>
+    <!-- Metadatos básicos -->
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portafolio de Carlos Salomon Saenz Diaz">
     <title>{% block title %}Carlos Salomon Saenz Diaz{% endblock %}</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+
+    <!-- Carga de Bootstrap CSS desde CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" 
+          rel="stylesheet" 
+          integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXfw7sb7ZMwL9FrdiYpill0+9V+/M7O/shBvw==" 
+          crossorigin="anonymous">
+
+    <!-- Estilos personalizados (opcional) -->
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">Carlos Salomon Saenz Diaz</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/api_xm/dashboard/">API XM Dashboard</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav">
-                    {% if user.is_authenticated %}
+    <!-- Barra de navegación -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'home' %}">Carlos Salomon Saenz Diaz</a>
+                <button class="navbar-toggler" type="button" 
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#navbarNav" 
+                        aria-controls="navbarNav" 
+                        aria-expanded="false" 
+                        aria-label="Alternar navegación">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <form action="{% url 'authz:logout' %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-light">Logout</button>
-                            </form>
+                            <a class="nav-link" href="{% url 'api_xm:api_xm_dashboard' %}">
+                                API XM Dashboard
+                            </a>
                         </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="btn btn-outline-light" href="{% url 'authz:login' %}">Login</a>
-                        </li>
-                    {% endif %}
-                </ul>
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'authz:logout' %}" 
+                                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    Logout
+                                </a>
+                                <form id="logout-form" action="{% url 'authz:logout' %}" method="post" class="d-none">
+                                    {% csrf_token %}
+                                </form>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="btn btn-outline-light" href="{% url 'authz:login' %}">Login</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
-    <div class="container mt-5">
+    <!-- Contenido principal -->
+    <main class="container mt-5">
         {% block content %}{% endblock %}
-    </div>
+    </main>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <!-- Pie de página -->
+    <footer class="bg-light py-3 mt-5">
+        <div class="container text-center">
+            <p class="text-muted mb-0">
+                &copy; {% now "Y" %} Carlos Salomon Saenz Diaz. Todos los derechos reservados.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Carga de Bootstrap JS desde CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js" 
+            integrity="sha512-7Pi/otdlbbCR+LnW+F7PwFcSDJO7rFabNtvzprgWtduVtr88cPJsK3rIgsnw1B0n1JmV4AHjDZEwGteFenpvwRtQ==" 
+            crossorigin="anonymous"></script>
+
+    <!-- Scripts adicionales -->
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

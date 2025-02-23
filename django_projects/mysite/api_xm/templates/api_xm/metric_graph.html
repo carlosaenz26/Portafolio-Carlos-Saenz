@@ -1,0 +1,8 @@
+<div class="card mt-4">
+    <div class="card-header">
+        <h3>{{ metric_id }} ({{ start_date }} - {{ end_date }})</h3>
+    </div>
+    <div class="card-body">
+        {{ graph_html|safe }}
+    </div>
+</div>

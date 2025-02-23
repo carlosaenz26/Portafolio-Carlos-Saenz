@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Test XM Data{% endblock %}
+
+{% block content %}
+<h2>Probar Consumo de Datos de XM</h2>
+<p>Ingresa los parámetros y haz clic en “Consultar”.</p>
+
+<div>
+    <label for="endpoint">Endpoint:</label>
+    <select id="endpoint">
+        <option value="hourly">hourly</option>
+        <option value="daily">daily</option>
+        <option value="monthly">monthly</option>
+        <option value="list">list</option>
+    </select>
+</div>
+
+<div>
+    <label for="metric_id">Metric ID:</label>
+    <input type="text" id="metric_id" placeholder="DemaReal, Gene, etc.">
+</div>
+
+<div>
+    <label for="entity">Entity:</label>
+    <input type="text" id="entity" placeholder="Sistema, Subarea, etc.">
+</div>
+
+<div>
+    <label for="start_date">Start Date:</label>
+    <input type="date" id="start_date">
+</div>
+
+<div>
+    <label for="end_date">End Date:</label>
+    <input type="date" id="end_date">
+</div>
+
+<div>
+    <button onclick="fetchXMData()">Consultar</button>
+</div>
+
+<div id="result" style="margin-top:20px; white-space: pre;"></div>
+
+<script>
+async function fetchXMData() {
+    const endpoint = document.getElementById('endpoint').value;
+    const metric_id = document.getElementById('metric_id').value;
+    const entity = document.getElementById('entity').value;
+    const start_date = document.getElementById('start_date').value;
+    const end_date = document.getElementById('end_date').value;
+
+    if(!endpoint || !metric_id || !entity || !start_date || !end_date) {
+        alert('Faltan parámetros.');
+        return;
+    }
+
+    const url = `/api_xm/${endpoint}/?metric_id=${metric_id}&entity=${entity}&start_date=${start_date}&end_date=${end_date}`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            document.getElementById('result').textContent = JSON.stringify(data.data, null, 2);
+        } else {
+            document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+        }
+    } catch(e) {
+        console.error(e);
+        document.getElementById('result').textContent = 'Error consultando la API.';
+    }
+}
+</script>
+{% endblock %}

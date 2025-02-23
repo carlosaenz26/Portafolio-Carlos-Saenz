@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Consultar {{ metric_id }} - API XM
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h2>📈 Consultar Datos para {{ metric_id }}</h2>
+        <form id="metric-form" class="mb-4">
+            <div class="form-group">
+                <label for="start_date">Fecha de Inicio (YYYY-MM-DD):</label>
+                <input type="date" id="start_date" name="start_date" class="form-control" required>
+            </div>
+            <div class="form-group mt-2">
+                <label for="end_date">Fecha de Fin (YYYY-MM-DD):</label>
+                <input type="date" id="end_date" name="end_date" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Obtener Datos</button>
+        </form>
+        <div id="graph-container"></div>
+    </div>
+
+    <script>
+        document.getElementById("metric-form").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const startDate = document.getElementById("start_date").value;
+            const endDate = document.getElementById("end_date").value;
+            const url = "{% url 'api_xm:fetch_metric_data' metric_id %}?start_date=" + startDate + "&end_date=" + endDate;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        document.getElementById("graph-container").innerHTML = data.html;
+                    }
+                })
+                .catch(error => alert("Error: " + error));
+        });
+    </script>
+{% endblock %}

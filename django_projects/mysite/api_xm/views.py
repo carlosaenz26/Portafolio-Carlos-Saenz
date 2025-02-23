@@ -1,21 +1,48 @@
-import logging
-from django.shortcuts import render
-from .data_fetcher import list_available_collections
+# api_xm/views.py
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-logger = logging.getLogger(__name__)
+from .utils import fetch_xm_data  # tu función que hace requests al API de XM
+# api_xm/views.py
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from .data_fetcher import get_collections_df  # tu función que obtiene el DF
+from .data_fetcher import group_collections
+
+
 @login_required
-def api_xm_dashboard(request):
-    """Vista para mostrar el dashboard de la API XM."""
+def get_collections_tree(request):
+    """Retorna la estructura jerárquica Type->Entity->lista de métricas en JSON."""
+    df = get_collections_df()  # supongamos que tienes algo así
+    grouped_data = group_collections(df)
+    return JsonResponse({"collections": grouped_data}, safe=False)
+
+@login_required
+def xm_dashboard_data(request):
+    """Vista que recibe parámetros y devuelve datos en JSON, sin guardarlos en la BD."""
+    endpoint = request.GET.get("endpoint")
+    metric_id = request.GET.get("metric_id")
+    entity = request.GET.get("entity")
+    start_date = request.GET.get("start_date")
+    end_date = request.GET.get("end_date")
+    filters = request.GET.getlist("filters", [])
+
+    if not all([endpoint, metric_id, entity, start_date, end_date]):
+        return JsonResponse({"error": "Faltan parámetros requeridos"}, status=400)
+
     try:
-        collections = list_available_collections()
-        if collections is None:
-            logger.warning("La API devolvió 'None', no hay colecciones disponibles.")
-            collections = []
-        
-        context = {'collections': collections}
-        logger.info("API XM Dashboard cargado exitosamente.")
-        return render(request, 'api_xm/collections.html', context)
-    
+        data = fetch_xm_data(endpoint, metric_id, start_date, end_date, entity, filters)
+        return JsonResponse({"data": data}, status=200)
     except Exception as e:
-        logger.error(f"Error al cargar el dashboard de la API XM: {e}")
-        return render(request, 'api_xm/error.html', {'error': str(e)})
+        return JsonResponse({"error": str(e)}, status=500)
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def dashboard_view(request):
+    """Renderiza el HTML con el dashboard sin guardar datos."""
+
+    return render(request, 'api_xm/dashboard.html')
+
+@login_required
+def hourly_data(request):
+    return xm_dashboard_data(request, endpoint='hourly')
