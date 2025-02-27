@@ -13,3 +13,5 @@ psycopg2-binary
 pydataxm
 pandas
 apache-airflow
+matplotlib
+fpdf
