@@ -12,3 +12,4 @@ django-bootstrap3
 psycopg2-binary
 pydataxm
 pandas
+apache-airflow
