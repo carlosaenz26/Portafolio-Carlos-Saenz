@@ -6,9 +6,3 @@ python manage.py migrate
 python manage.py runserver
 ###################################
 comandos airflow
-
-pkill -f "airflow"
-airflow scheduler &
-airflow webserver --port 8080 &
-
-airflow tasks logs xm_data_pipeline send_email --latest

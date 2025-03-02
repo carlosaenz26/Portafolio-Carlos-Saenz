@@ -3,4 +3,60 @@ airflow users create \
     --firstname Admin \
     --lastname User \
     --role Admin \
-    --email admin@example.com
+    --email info@zrenew.com
+
+
+pkill -f "airflow"
+airflow scheduler &
+airflow webserver --port 8080 &
+
+airflow tasks logs xm_data_pipeline send_email --latest
+
+source airflow_venv/bin/activate
+#############################################################
+# Stop all Airflow processes
+pkill -f "airflow scheduler"
+pkill -f "airflow webserver"
+
+# Set AIRFLOW_HOME
+export AIRFLOW_HOME=/home/casalo/Portafolio-Carlos-Saenz/django_projects/mysite/airflow
+echo 'export AIRFLOW_HOME=/home/casalo/Portafolio-Carlos-Saenz/django_projects/mysite/airflow' >> ~/.bashrc
+source ~/.bashrc
+
+# Verify dags_folder
+cat /home/casalo/Portafolio-Carlos-Saenz/django_projects/mysite/airflow/airflow.cfg | grep dags_folder
+
+# Test DAG
+python /home/casalo/Portafolio-Carlos-Saenz/django_projects/mysite/airflow/dags/xm_data_pipeline.py
+
+# Start Airflow
+airflow scheduler &
+airflow webserver --port 8080 &
+
+# Check and trigger
+airflow dags list
+airflow dags trigger xm_data_pipeline
+
+# Clean up old directory
+rm -rf /home/casalo/airflow/
+
+##########################################
+# Check status
+airflow dags list-runs -d xm_data_pipeline
+
+# Test tasks
+airflow tasks test xm_data_pipeline fetch_xm_data 2025-03-01T19:43:12
+airflow tasks test xm_data_pipeline process_data 2025-03-01T19:43:12
+airflow tasks test xm_data_pipeline send_email 2025-03-01T19:43:12
+
+# Check logs if needed
+cat /home/casalo/Portafolio-Carlos-Saenz/django_projects/mysite/airflow/logs/dag_id=xm_data_pipeline/run_id=manual__2025-03-01T19:43:12+00:00/task_id=fetch_xm_data/*.log
+
+# Restart scheduler after fixes
+pkill -f "airflow scheduler"
+airflow scheduler &
+
+# Retrigger
+airflow dags trigger xm_data_pipeline
+##################################
+airflow dags trigger -c '{"email_to": "carlosaenz.26@hotmail.com"}' xm_data_pipeline
