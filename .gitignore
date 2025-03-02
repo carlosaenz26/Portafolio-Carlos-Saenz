@@ -37,7 +37,7 @@ share/python-wheels/
 MANIFEST
 
 # Airflow-specific files
-airflow.cfg
+#airflow.cfg
 airflow.db
 logs/
 dags/__pycache__/
