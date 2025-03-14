@@ -166,3 +166,16 @@ docker-compose.yml
 .terraform/
 *.tfstate
 *.tfstate.backup
+airflow.cfg
+airflow/airflow.db
+airflow/airflow.cfg
+airflow/logs/
+airflow/webserver_config.py
+airflow_venv/
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+*.log
+airflow/unittests.cfg
